@@ -4,11 +4,19 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Display;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.RelativeLayout;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -19,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         //カスタムビュークラスのインスタンスをコンテントにセット
         setContentView(new CustomView(this));
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -27,29 +36,29 @@ public class MainActivity extends AppCompatActivity {
     class CustomView extends SurfaceView implements SurfaceHolder.Callback, Runnable {
 
         //スレッドクラス
-        Thread mainLoop = null;
+        Thread mainLoop;
         // 描画用
-        Paint paint = null;
-        Paint paint2 = null;
-        Paint paint3 = null;
-        Paint paint4 = null;
-        Paint paint5 = null;
-        Paint paint6 = null;
+        Paint paint;
+        Paint paint2;
+        Paint paint3;
+        Paint paint4;
+        Paint paint5;
+        Paint paint6;
 
-        // 円のX,Y座標
-        private int circleX = 50;
-        private int circleY = 50;
-        private int circle2X = 30;
-        private int circle2Y = 30;
-        // 円の移動量
-        private int circleVx = 15;
-        private int circleVy = 15;
-        private int circle2Vx = 8;
-        private int circle2Vy = 15;
-
-        Block[] block;
+        Block[] block,block2,block3,block4,block5,block6,block7,block8,block9,block10;
         Bar  bar;              //バー
-        int view_w, view_h;    // SurfaveViewの幅と高さ
+        int view_w, view_h;    // SurfaceViewの幅と高さ
+        Ball ball;
+        int num; //カウンターiの最大値変数 画面サイズによって表示個数を変えるため
+
+        //Blockの情報
+        int blockWidth = 40;//ブロックの半分の横の長さ
+        int blockHeight = 10;//ブロックの半分の高さ
+        int margin =5;
+
+        float touchX;
+        float touchY;
+        int touchAction;//x座標、y座標,アクション種別の取得
 
 
 
@@ -73,16 +82,45 @@ public class MainActivity extends AppCompatActivity {
             paint5.setColor(Color.YELLOW);
             paint6.setColor(Color.BLUE);
 
+//            ViewGroup root = (ViewGroup)getWindow().getDecorView().findViewById(android.R.id.content);
+//            view_h = root.getHeight();
+//            view_w = root.getWidth();
+//            Log.d("width", "view_w:" +view_w);
+//            Log.d("height", "view_h:" +view_h);
+
+            WindowManager wm = (WindowManager)getSystemService(WINDOW_SERVICE);
+            // ディスプレイのインスタンス生成
+            Display disp = wm.getDefaultDisplay();
+            Point size = new Point();
+            disp.getSize(size);
+            view_w =size.x;
+            view_h =size.y;
+
+            //ボールを生成
+            ball = new Ball(view_w/2, view_h/3 , view_w, view_h );
+
+            // バーを生成  view_w/2画面の半分
+            bar  = new Bar( view_w/2 , view_h - 150 );
+            touchX = bar.x;//タッチしてないとき0なので
 
 
         }
+
+//        @Override
+//        public void onWindowFocusChanged(boolean hasFocus) {
+//            super.onWindowFocusChanged(hasFocus);
+//
+//            // Viewサイズを取得する
+//            RelativeLayout rl = (RelativeLayout) findViewById(R.id.relativeLayout1);
+//            Log.d("width", "view_w:" +view_w);
+//            Log.d("height", "view_h:" +view_h);
+//        }
 
 
 
         @Override
         public void surfaceChanged(SurfaceHolder holder, int format, int width,
                                    int height) {
-            // TODO 今回は何もしない。
 
         }
 
@@ -98,13 +136,34 @@ public class MainActivity extends AppCompatActivity {
             mainLoop = new Thread(this);
             mainLoop.start();
 
-
         }
 
 
         @Override
         public void surfaceDestroyed(SurfaceHolder holder) {
-            // TODO 今回は何もしない。
+
+        }
+
+        @Override
+        public boolean onTouchEvent(MotionEvent event) {
+            touchX =event.getRawX();
+            touchY=event.getRawY();
+            touchAction=event.getAction();
+
+            switch (touchAction) {
+                case MotionEvent.ACTION_DOWN:
+
+
+                    break;
+                case MotionEvent.ACTION_MOVE:
+
+                    break;
+                case MotionEvent.ACTION_UP:
+                    break;
+
+            }
+
+            return true;
         }
 
 
@@ -118,76 +177,105 @@ public class MainActivity extends AppCompatActivity {
                     //背景
                     canvas.drawColor(Color.BLACK);
 
-                    view_w = canvas.getWidth();
-                    view_h = canvas.getHeight();
-
-                    // バーを生成  view_w/2画面の半分
-                    bar  = new Bar( view_w/2 , view_h - 100 );
-                    //max720 1280
-                    //ブロックを生成
-                    block = new Block[21];
-                    block[0]= new Block(view_w/10, view_h/9);
-                    block[1]= new Block(view_w/10 + 100, view_h/9 );
-                    block[2]= new Block(view_w/10 + 200, view_h/9);
-                    block[3]= new Block(view_w/10 + 300, view_h/9);
-                    block[4]= new Block(view_w/10 + 400, view_h/9);
-                    block[5]= new Block(view_w/10 + 500, view_h/9);
-                    block[6]= new Block(view_w/10 + 600, view_h/9);
-
-                    block[7]= new Block(view_w/10, view_h/9 +50 );
-                    block[8]= new Block(view_w/10 + 100, view_h/9 + 50);
-                    block[9]= new Block(view_w/10 + 200, view_h/9 + 50 );
-                    block[10]= new Block(view_w/10 + 300, view_h/9 + 50);
-                    block[11]= new Block(view_w/10 + 400, view_h/9 + 50);
-                    block[12]= new Block(view_w/10 + 500, view_h/9 + 50);
-                    block[13]= new Block(view_w/10 + 600, view_h/9 + 50);
-
-                    block[14]= new Block(view_w/10, view_h/9 + 100);
-                    block[15]= new Block(view_w/10 + 100, view_h/9 + 100);
-                    block[16]= new Block(view_w/10 + 200, view_h/9 + 100);
-                    block[17]= new Block(view_w/10 + 300, view_h/9 + 100);
-                    block[18]= new Block(view_w/10 + 400, view_h/9 + 100);
-                    block[19]= new Block(view_w/10 + 500, view_h/9 + 100);
-                    block[20]= new Block(view_w/10 + 600, view_h/9 + 100);
+                    //max720 1280 画面サイズ
+                    num =(view_w - 32 + margin)/(blockWidth*2);//横ブロックの個数. 端のmargin 16*2 margin一個足りないので足す
 
 
-                    // 円1を描画する
-                    canvas.drawCircle(circleX, circleY, 20, paint);
-                    //円2を描画する
-                    canvas.drawCircle(circle2X,circle2Y,20,paint2);
-                    //バーを描画する   left top right bottom
-                    canvas.drawRect( bar.x -100 , bar.y , bar.x + 100 , bar.y + 20  , paint3);
-                    //ブロックを描画する
-                    for(int i=0; i < 21;i+=1)
+                    block = new Block[num];//配列の初期化
+                    block2 = new Block[num];
+                    block3 = new Block[num];
+                    block4 = new Block[num];
+                    block5 = new Block[num];
+                    block6 = new Block[num];
+                    block7 = new Block[num];
+                    block8 = new Block[num];
+                    block9 = new Block[num];
+                    block10 = new Block[num];
+
+                    for(int i = 0;i< num ;i++ )
                     {
-                        if(i<7) canvas.drawRect(block[i].x -40,block[i].y, block[i].x +40, block[i].y +20, paint4);
-                        if(i>=7||i<14) canvas.drawRect(block[i].x -40,block[i].y, block[i].x +40, block[i].y +20, paint5);
-                        if(i>=14||i<21) canvas.drawRect(block[i].x -40,block[i].y, block[i].x +40, block[i].y +20, paint6);
+                        block[i] = new Block(view_w/num + (blockWidth*2+ margin)*i, view_h/10);//x座標はブロックの半分*2+マージン分ずらす
+                        block2[i] = new Block (view_w/num + (blockWidth*2+ margin)*i, view_h/10 + (blockHeight*2 + margin));
+                        block3[i] = new Block (view_w/num + (blockWidth*2+ margin)*i, view_h/10 + (blockHeight*2 + margin)*2);
+                        block4[i] = new Block (view_w/num + (blockWidth*2+ margin)*i, view_h/10 + (blockHeight*2 + margin)*3);
+                        block5[i] = new Block (view_w/num + (blockWidth*2+ margin)*i, view_h/10 + (blockHeight*2 + margin)*4);
+                        block6[i] = new Block (view_w/num + (blockWidth*2+ margin)*i, view_h/10 + (blockHeight*2 + margin)*5);
+                        block7[i] = new Block (view_w/num + (blockWidth*2+ margin)*i, view_h/10 + (blockHeight*2 + margin)*6);
+                        block8[i] = new Block (view_w/num + (blockWidth*2+ margin)*i, view_h/10 + (blockHeight*2 + margin)*7);
+                        block9[i] = new Block (view_w/num + (blockWidth*2+ margin)*i, view_h/10 + (blockHeight*2 + margin)*8);
+                        block10[i] = new Block (view_w/num + (blockWidth*2+ margin)*i, view_h/10 + (blockHeight*2 + margin)*9);
+
 
                     }
 
 
-                    // 円の座標を移動させる
-                    circleX += circleVx;
-                    circleY += circleVy;
-                    circle2X += circle2Vx;
-                    circle2Y += circle2Vy;
-                    // 画面の領域を超えた？
-                    if (circleX < 0 || getWidth() < circleX)  circleVx *= -1;
-                    if (circleY < 0 || getHeight() < circleY) circleVy *= -1;
-                    if (circle2X < 0 || getWidth() < circle2X)  circle2Vx *= -1;
-                    if (circle2Y < 0 || getHeight() < circle2Y) circle2Vy *= -1;
+
+
+                    //ブロックの描画
+                    for(int i = 0;i<num;i++)
+                    {
+//                        Log.d("block.x","blockのx座標"+block[i].x);
+//                        Log.d("block.y","blockのy座標"+block[i].y);
+                        canvas.drawRect(block[i].x -blockWidth,block[i].y -blockHeight, block[i].x +blockWidth, block[i].y + blockHeight, paint3);
+                        canvas.drawRect(block2[i].x -blockWidth,block2[i].y -blockHeight, block2[i].x +blockWidth, block2[i].y + blockHeight, paint3);
+                        canvas.drawRect(block3[i].x -blockWidth,block3[i].y -blockHeight, block3[i].x +blockWidth, block3[i].y + blockHeight, paint3);
+                        canvas.drawRect(block4[i].x -blockWidth,block4[i].y -blockHeight, block4[i].x +blockWidth, block4[i].y + blockHeight, paint3);
+                        canvas.drawRect(block5[i].x -blockWidth,block5[i].y -blockHeight, block5[i].x +blockWidth, block5[i].y + blockHeight, paint3);
+                        canvas.drawRect(block6[i].x -blockWidth,block6[i].y -blockHeight, block6[i].x +blockWidth, block6[i].y + blockHeight, paint3);
+                        canvas.drawRect(block7[i].x -blockWidth,block7[i].y -blockHeight, block7[i].x +blockWidth, block7[i].y + blockHeight, paint3);
+                        canvas.drawRect(block8[i].x -blockWidth,block8[i].y -blockHeight, block8[i].x +blockWidth, block8[i].y + blockHeight, paint3);
+                        canvas.drawRect(block9[i].x -blockWidth,block9[i].y -blockHeight, block9[i].x +blockWidth, block9[i].y + blockHeight, paint3);
+                        canvas.drawRect(block10[i].x -blockWidth,block10[i].y -blockHeight, block10[i].x +blockWidth, block10[i].y + blockHeight, paint3);
+                    }
+//                    //ブロックを描画する
+//                    for(int i=0; i <24 ;i+=1) {
+//
+//                        canvas.drawRect(block[i].x -40,block[i].y -10, block[i].x +40, block[i].y +10, paint3);
+//
+//                    }
+
+                    //バーのスライド移動
+                    if(bar.x + bar.halfBar < touchX){
+                        bar.right(touchX);
+                    }else{
+                        bar.left(touchX);
+                    }
+
+                    //バーを描画する   left top right bottom
+                    canvas.drawRect(bar.x - bar.halfBar , bar.y +bar.height , bar.x + bar.halfBar , bar.y - bar.height , paint3);
+                    //Ballクラスからボールを描画
+                    canvas.drawCircle( ball.x, ball.y, ball.size , paint5);
+
+
+
+                    //Ballクラスのボールを移動
+                    ball.x += ball.vx;
+                    ball.y += ball.vy;
+                    //TODO:ボールの中心で判定されてるので、ボールの幅で判定するようにする(Option)
+                    //壁に衝突
+                    if (ball.x < 0 || getWidth() < ball.x)  ball.vx *= -1;
+                    if (ball.y < 0 || getHeight() < ball.y) ball.vy *= -1;
+                    //バーに衝突
+//                    if (ball.x + ball.size >=bar.x) ball.vx *= -1;
+//                    if (ball.x <= bar.x + bar.halfBar) ball.vx *= -1;
+//                    if (ball.y >= bar.y) ball.vx *= -1;
+
+
+
+
+                    //TODO:玉とブロックの衝突判定 ブロック消失　玉反発　音がなる
+
 
                     getHolder().unlockCanvasAndPost(canvas);
 
                 }
             }
 
-
-
-
-
         }
+
+
+
+
     }
 
 

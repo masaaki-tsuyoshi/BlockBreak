@@ -4,9 +4,9 @@ public class Block {
 
     float x; // ブロックのｘ座標
     float y; // ブロックのｙ座標
-    int blockWidth;
-    int blockHeight; // ブロックの幅、高さ
-    int margin = 25; //ブロックの間のマージン
+    int blockWidth =30;
+    int blockHeight=20; // ブロックの幅、高さ
+    int margin = 5; //ブロックの間のマージン
     int i; //カウンター
 
     //コンストラクタ
