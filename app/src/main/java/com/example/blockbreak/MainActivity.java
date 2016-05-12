@@ -56,9 +56,10 @@ public class MainActivity extends AppCompatActivity {
         int blockHeight = 10;//ブロックの半分の高さ
         int margin =5;
 
-        float touchX;
-        float touchY;
+        float touchX,touchY;
         int touchAction;//x座標、y座標,アクション種別の取得
+
+        boolean flag;
 
 
 
@@ -82,12 +83,8 @@ public class MainActivity extends AppCompatActivity {
             paint5.setColor(Color.YELLOW);
             paint6.setColor(Color.BLUE);
 
-//            ViewGroup root = (ViewGroup)getWindow().getDecorView().findViewById(android.R.id.content);
-//            view_h = root.getHeight();
-//            view_w = root.getWidth();
-//            Log.d("width", "view_w:" +view_w);
-//            Log.d("height", "view_h:" +view_h);
 
+            //TODO:コンテンツ領域が取れてないのでとる。
             WindowManager wm = (WindowManager)getSystemService(WINDOW_SERVICE);
             // ディスプレイのインスタンス生成
             Display disp = wm.getDefaultDisplay();
@@ -100,21 +97,11 @@ public class MainActivity extends AppCompatActivity {
             ball = new Ball(view_w/2, view_h/3 , view_w, view_h );
 
             // バーを生成  view_w/2画面の半分
-            bar  = new Bar( view_w/2 , view_h - 150 );
+            bar  = new Bar( view_w/2 , view_h - 250 );
             touchX = bar.x;//タッチしてないとき0なので
 
 
         }
-
-//        @Override
-//        public void onWindowFocusChanged(boolean hasFocus) {
-//            super.onWindowFocusChanged(hasFocus);
-//
-//            // Viewサイズを取得する
-//            RelativeLayout rl = (RelativeLayout) findViewById(R.id.relativeLayout1);
-//            Log.d("width", "view_w:" +view_w);
-//            Log.d("height", "view_h:" +view_h);
-//        }
 
 
 
@@ -149,18 +136,37 @@ public class MainActivity extends AppCompatActivity {
             touchX =event.getRawX();
             touchY=event.getRawY();
             touchAction=event.getAction();
+            //720 1280   bar.y = view_w - 250　1080
+
+            float upperLine = bar.y-bar.height-margin;//1065
+            float downLine = bar.y+ bar.height+margin*25;//1115
+            Log.d("move", "downLine:"+downLine);
+            Log.d("move", "upperLine:"+upperLine);
+
+
 
             switch (touchAction) {
                 case MotionEvent.ACTION_DOWN:
-
-
+                    flag = false;
                     break;
                 case MotionEvent.ACTION_MOVE:
+                    if(touchX > 0 && touchX < view_w && touchY > 0 && touchY < upperLine ) {
+                        flag = false;
+                    }
+                    if(touchX > 0 && touchX < view_w && touchY > downLine && touchY < view_h) {
+                        flag = false;
+                    }
+                    if(touchX > 0 && touchX < view_w && touchY >= upperLine && touchY < downLine){
+                        flag = true;
+                    }
+//                    Log.d("move", "touchX:"+touchX);
+//                    Log.d("move", "touchY:"+touchY);
+                    Log.d("move","touchY:" +touchY);
 
                     break;
                 case MotionEvent.ACTION_UP:
+                    flag =false;
                     break;
-
             }
 
             return true;
@@ -178,10 +184,11 @@ public class MainActivity extends AppCompatActivity {
                     canvas.drawColor(Color.BLACK);
 
                     //max720 1280 画面サイズ
-                    num =(view_w - 32 + margin)/(blockWidth*2);//横ブロックの個数. 端のmargin 16*2 margin一個足りないので足す
+                    num =(view_w - 32 + margin)/(blockWidth*2);//横ブロックの個数. 端のmargin 16*2
 
 
-                    block = new Block[num];//配列の初期化
+                    //配列の初期化
+                    block = new Block[num];
                     block2 = new Block[num];
                     block3 = new Block[num];
                     block4 = new Block[num];
@@ -208,9 +215,6 @@ public class MainActivity extends AppCompatActivity {
 
                     }
 
-
-
-
                     //ブロックの描画
                     for(int i = 0;i<num;i++)
                     {
@@ -234,20 +238,14 @@ public class MainActivity extends AppCompatActivity {
 //
 //                    }
 
-                    //バーのスライド移動
-                    if(bar.x + bar.halfBar < touchX){
-                        bar.right(touchX);
-                    }else{
-                        bar.left(touchX);
-                    }
-
                     //バーを描画する   left top right bottom
                     canvas.drawRect(bar.x - bar.halfBar , bar.y +bar.height , bar.x + bar.halfBar , bar.y - bar.height , paint3);
                     //Ballクラスからボールを描画
                     canvas.drawCircle( ball.x, ball.y, ball.size , paint5);
 
 
-
+                    //バーのスライド移動
+                    if(flag) bar.move(touchX);
                     //Ballクラスのボールを移動
                     ball.x += ball.vx;
                     ball.y += ball.vy;
