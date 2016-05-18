@@ -1,6 +1,8 @@
 package com.example.blockbreak;
 
 
+import android.graphics.Point;
+
 public class Ball {
     //ボールのサイズ
     int size = 15;
@@ -23,6 +25,13 @@ public class Ball {
         view_h = height;
         vx = 15;
         vy = 15;
+    }
+
+    public int getX(){
+        return (int)x;
+    }
+    public int getY(){
+        return (int)y;
     }
 
     public void move() {

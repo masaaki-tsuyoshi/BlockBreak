@@ -1,13 +1,18 @@
 package com.example.blockbreak;
 
 
+import android.graphics.Paint;
+import android.graphics.Point;
+import android.graphics.Rect;
+import android.graphics.RectF;
+
 public class Bar {
     //表示座標
     public float x;
     public float y;
     //バーのサイズ
     public final float halfBar = 100;
-    public final int height = 10;
+    public final int height = 100;
 
 
     //コンストラクタ
@@ -22,6 +27,7 @@ public class Bar {
     public void move(float touch_x){
         x = touch_x;
     }
+
 
 
 }
