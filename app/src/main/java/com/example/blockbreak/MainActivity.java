@@ -8,19 +8,18 @@ import android.graphics.Point;
 import android.graphics.RectF;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
-import android.view.ViewTreeObserver;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 
 public class MainActivity extends AppCompatActivity {
 
-
+    int width,height;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,18 +27,10 @@ public class MainActivity extends AppCompatActivity {
         //カスタムビュークラスのインスタンスをコンテントにセット
         setContentView(new CustomView(this));
 
-
     }
 
-//    @Override
-//    public void onWindowFocusChanged(boolean hasFocus) {
-//        super.onWindowFocusChanged(hasFocus);
-//
-//        // Viewサイズを取得する
-//        CustomView customView = findViewById(R.id.content);
-//        Log.d("size","width: " + customView.getWidth());
-//        Log.d("size","height: " + customView.getHeight());
-//    }
+
+
 
     class CustomView extends SurfaceView implements SurfaceHolder.Callback, Runnable {
 
@@ -47,23 +38,19 @@ public class MainActivity extends AppCompatActivity {
         Thread mainLoop;
         Canvas canvas;
         // 描画用
-        Paint paint;
-        Paint paint2;
-        Paint paint3;
-        Paint paint4;
-        Paint paint5;
-        Paint paint6;
+        Paint paint,paint2,paint3,paint4,paint5,paint6,paint7;
+
 
         Block[] block,block2,block3,block4,block5,block6,block7,block8,block9,block10;
+        int blockWidth = 40;
+        int blockHeight = 10;
+
         Bar  bar;              //バー
-        int width,height;
         int view_w, view_h;    // SurfaceViewの幅と高さ
         Ball ball;
         int num; //カウンターiの最大値変数 画面サイズによって表示個数を変えるため
 
-        //Blockの情報
-        int blockWidth = 40;//ブロックの半分の横の長さ
-        int blockHeight = 10;//ブロックの半分の高さ
+        final int NUM_BLOCK = 8;//ブロック個数
         int margin =5;
 
         float touchX,touchY;
@@ -73,22 +60,32 @@ public class MainActivity extends AppCompatActivity {
         Points count;//カウント用のPointsクラスのインスタンス
 
 
-//        @Override
-//        public void onWindowFocusChanged(boolean hasFocus) {
-//            {
-//                super.onWindowFocusChanged(hasFocus);
-//
-//                width = getWidth();//720
-//                height =getHeight();//1230
-//
-//                Log.d("size", "width: "+width);
-//                Log.d("size", "height: "+height);
-//
-//
-//            }
-//
-//
-//        }
+        @Override
+        public void onWindowFocusChanged(boolean hasFocus) {
+            {
+                super.onWindowFocusChanged(hasFocus);
+
+                Point point = new Point(0, 0);
+                point.set(getWidth(), getHeight());
+                width = getWidth();//720
+                height = getHeight();//1230
+
+                Log.d("size", "width: "+width);
+                Log.d("size", "height: "+height);
+
+
+            }
+
+
+        }
+
+        public Point getViewSize(View View){
+            Point point = new Point(0, 0);
+            point.set(View.getWidth(), View.getHeight());
+
+            return point;
+        }
+
 
 
         //コンストラクタ
@@ -103,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
             paint4 = new Paint();
             paint5 = new Paint();
             paint6 = new Paint();
+            paint7 = new Paint();
 
             paint.setColor(Color.RED);
             paint2.setColor(Color.CYAN);
@@ -110,6 +108,16 @@ public class MainActivity extends AppCompatActivity {
             paint4.setColor(Color.RED);
             paint5.setColor(Color.YELLOW);
             paint6.setColor(Color.BLUE);
+
+            paint6.setAntiAlias(true);
+            paint6.setTextSize(40);
+            paint6.setTextAlign(Paint.Align.CENTER);
+            paint6.setColor(Color.RED);
+
+            paint7.setAntiAlias(true);
+            paint7.setColor(Color.WHITE);
+            paint7.setTextSize(100);
+            paint7.setTextAlign(Paint.Align.CENTER);
 
 
             //TODO:コンテンツ領域が取れてないのでとる。
@@ -193,70 +201,10 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
 
-        //barとボールの交差判定 Rectを使った場合
-        public boolean collideWidth(Ball ball2) {
-            RectF rectCheck = new RectF();//判定用
-            RectF rect_bar = new RectF(bar.x - bar.halfBar , bar.y - bar.height , bar.x + bar.halfBar , bar.y + bar.height);//当たり判定用rect bar
-            RectF rect_ball=new RectF(ball.x - ball.size , ball.y - ball.size , ball.x + ball.size, ball.y + ball.size );//当たり判定用のrect ball
-            return rectCheck.intersects(rect_bar,rect_ball);//intersect=交差メソッド　ボールが交差したらtrue
-        }
-
-//        //ブロックとボールの当たり判定
-//        public boolean collideWidth2(Ball ball3) {
-//            RectF rectCheck2 = new RectF();//判定用
-//
-//            RectF rect_block[] = new RectF[num];
-//            RectF rect_block2[] = new RectF[num];
-//            RectF rect_block3[] = new RectF[num];
-//            RectF rect_block4[] = new RectF[num];
-//            RectF rect_block5[] = new RectF[num];
-//            RectF rect_block6[] = new RectF[num];
-//            RectF rect_block7[] = new RectF[num];
-//            RectF rect_block8[] = new RectF[num];
-//            RectF rect_block9[] = new RectF[num];
-//            RectF rect_block10[] = new RectF[num];
-//
-//            for(int i = 0;i<num;i++)
-//            {
-//                rect_block[i] = new RectF(block[i].x -blockWidth,block[i].y -blockHeight, block[i].x +blockWidth, block[i].y + blockHeight);
-//                rect_block2[i] = new RectF(block2[i].x -blockWidth,block2[i].y -blockHeight, block2[i].x +blockWidth, block2[i].y + blockHeight);
-//                rect_block3[i] = new RectF(block3[i].x -blockWidth,block3[i].y -blockHeight, block3[i].x +blockWidth, block3[i].y + blockHeight);
-//                rect_block4[i] = new RectF(block4[i].x -blockWidth,block4[i].y -blockHeight, block4[i].x +blockWidth, block4[i].y + blockHeight);
-//                rect_block5[i] = new RectF(block5[i].x -blockWidth,block5[i].y -blockHeight, block5[i].x +blockWidth, block5[i].y + blockHeight);
-//                rect_block6[i] = new RectF(block6[i].x -blockWidth,block6[i].y -blockHeight, block6[i].x +blockWidth, block6[i].y + blockHeight);
-//                rect_block7[i] = new RectF(block7[i].x -blockWidth,block7[i].y -blockHeight, block7[i].x +blockWidth, block7[i].y + blockHeight);
-//                rect_block8[i] = new RectF(block8[i].x -blockWidth,block8[i].y -blockHeight, block8[i].x +blockWidth, block8[i].y + blockHeight);
-//                rect_block9[i] = new RectF(block9[i].x -blockWidth,block9[i].y -blockHeight, block9[i].x +blockWidth, block9[i].y + blockHeight);
-//                rect_block10[i] = new RectF(block10[i].x -blockWidth,block10[i].y -blockHeight, block10[i].x +blockWidth, block10[i].y + blockHeight);
-//            }
-//
-//            RectF rect_ball= new RectF(ball.x - ball.size , ball.y - ball.size , ball.x + ball.size, ball.y + ball.size );//当たり判定用のrect ball
-//
-//             for(int i = 0;i<num;i++) {
-//
-//                boolean flag1 = rectCheck2.intersects(rect_ball, rect_block[i]); //intersect=交差メソッド　ボールが交差したらtrue
-//                boolean flag2 = rectCheck2.intersects(rect_ball, rect_block2[i]);
-//                boolean flag3 = rectCheck2.intersects(rect_ball, rect_block3[i]);
-//                boolean flag4 = rectCheck2.intersects(rect_ball, rect_block4[i]);
-//                boolean flag5 = rectCheck2.intersects(rect_ball, rect_block5[i]);
-//                boolean flag6 = rectCheck2.intersects(rect_ball, rect_block6[i]);
-//                boolean flag7 = rectCheck2.intersects(rect_ball, rect_block7[i]);
-//                boolean flag8 =  rectCheck2.intersects(rect_ball, rect_block8[i]);
-//                boolean flag9 = rectCheck2.intersects(rect_ball, rect_block9[i]);
-//                boolean flag10 = rectCheck2.intersects(rect_ball, rect_block10[i]);
-//
-//            }
-//            boolean blockFlag[] = {flag1,flag2,flag3,};
-//
-//            for (int i = 0;i<10;i++)
-//                if (blockFlag[i]) {
-//                return true;
-//            }
-//        }
 
 
         public void collisionDetection(){
-            if (collideWidth(ball)){
+            if (bar.collideWidth(ball,bar)){
 
 //                //TODO:vx vyの動きを定義
 //                if ( ball.y + ball.size >= bar.y - bar.height && ball.y - ball.size <= bar.y + bar.height && ball.x + ball.size >= bar.x - bar.halfBar && ball.x - ball.size <= bar.x + bar.halfBar ) {
@@ -269,8 +217,7 @@ public class MainActivity extends AppCompatActivity {
 
                     ball.vy *= -1;
                     count.count(50);
-                }
-                if ( ball.y + ball.size >= bar.y - bar.height && ball.y - ball.size <= bar.y + bar.height) {
+                } else if ( ball.y + ball.size >= bar.y - bar.height && ball.y - ball.size <= bar.y + bar.height) {
 
                     ball.vx *= -1;
                     count.count(50);
@@ -278,7 +225,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
 
-//            if(collideWidth2(ball)) {
+//            if(collideWidth2(view_w,view_h,ball)) {
 //                if ( ball.x + ball.size >= bar.x - bar.halfBar && ball.x - ball.size <= bar.x + bar.halfBar ) {
 //                    ball.vy *= -1;
 //                }
@@ -294,22 +241,29 @@ public class MainActivity extends AppCompatActivity {
         public void run(){
 
             while (true) {
-                 canvas = getHolder().lockCanvas();
+
+                if (width >0 || height > 0) canvas = getHolder().lockCanvas();
                 if (canvas != null)
                 {
                     //背景
                     canvas.drawColor(Color.BLACK);
-//スコア表示
-//                    canvas.drawText("点数:"+ count, 10, 30, paint3);
+
+                    count.paintPoints(canvas);
+
+                    canvas.drawText("残機:"+ Life.life, 630, 60, paint6);
+                    //スコア表示
+//                  canvas.drawText("点数:"+ count, 10, 30, paint3);
 //
-//                    draw(canvas);
+//                  draw(canvas);
 
                     //Log.d("point","x"+ count.x);
 //                    Log.d("point","y"+ count.y);
 
                     //max720 1280 画面サイズ
-                    num =(view_w - 32 + margin)/(blockWidth*2);//横ブロックの個数. 端のmargin 16*2
+                    num =(view_w - 32 + margin)/(blockWidth *2);//横ブロックの個数. 端のmargin 16*2
 
+
+                    //配列の初期化
 
                     //配列の初期化
                     block = new Block[num];
@@ -323,21 +277,24 @@ public class MainActivity extends AppCompatActivity {
                     block9 = new Block[num];
                     block10 = new Block[num];
 
+
                     for(int i = 0;i< num ;i++ )
                     {
-                        block[i] = new Block(view_w/num + (blockWidth*2+ margin)*i, view_h/10);//blockのx座標とy座標　マージン分横にずらしている
-                        block2[i] = new Block (view_w/num + (blockWidth*2+ margin)*i, view_h/10 + (blockHeight*2 + margin));
-                        block3[i] = new Block (view_w/num + (blockWidth*2+ margin)*i, view_h/10 + (blockHeight*2 + margin)*2);
-                        block4[i] = new Block (view_w/num + (blockWidth*2+ margin)*i, view_h/10 + (blockHeight*2 + margin)*3);
-                        block5[i] = new Block (view_w/num + (blockWidth*2+ margin)*i, view_h/10 + (blockHeight*2 + margin)*4);
-                        block6[i] = new Block (view_w/num + (blockWidth*2+ margin)*i, view_h/10 + (blockHeight*2 + margin)*5);
-                        block7[i] = new Block (view_w/num + (blockWidth*2+ margin)*i, view_h/10 + (blockHeight*2 + margin)*6);
-                        block8[i] = new Block (view_w/num + (blockWidth*2+ margin)*i, view_h/10 + (blockHeight*2 + margin)*7);
-                        block9[i] = new Block (view_w/num + (blockWidth*2+ margin)*i, view_h/10 + (blockHeight*2 + margin)*8);
-                        block10[i] = new Block (view_w/num + (blockWidth*2+ margin)*i, view_h/10 + (blockHeight*2 + margin)*9);
+                        block[i] = new Block(view_w/num + (Block.WIDTH*2+ Block.MARGIN)*i, view_h/10);//blockのx座標とy座標　マージン分横にずらしている
+                        block2[i] = new Block (view_w/num + (Block.WIDTH*2+ Block.MARGIN)*i, view_h/10 + (Block.HEIGHT*2 + margin));
+                        block3[i] = new Block (view_w/num + (Block.WIDTH*2+ Block.MARGIN)*i, view_h/10 + (Block.HEIGHT*2 + margin)*2);
+                        block4[i] = new Block (view_w/num + (Block.WIDTH*2+ Block.MARGIN)*i, view_h/10 + (Block.HEIGHT*2 + margin)*3);
+                        block5[i] = new Block (view_w/num + (Block.WIDTH*2+ Block.MARGIN)*i, view_h/10 + (Block.HEIGHT*2 + margin)*4);
+                        block6[i] = new Block (view_w/num + (Block.WIDTH*2+ margin)*i, view_h/10 + (Block.HEIGHT*2 + margin)*5);
+                        block7[i] = new Block (view_w/num + (Block.WIDTH*2+ margin)*i, view_h/10 + (Block.HEIGHT*2 + margin)*6);
+                        block8[i] = new Block (view_w/num + (Block.WIDTH*2+ margin)*i, view_h/10 + (Block.HEIGHT*2 + margin)*7);
+                        block9[i] = new Block (view_w/num+ (Block.WIDTH*2+ margin)*i, view_h/10 + (Block.HEIGHT*2 + margin)*8);
+                        block10[i] = new Block (view_w/num + (Block.WIDTH*2+ margin)*i, view_h/10 + (Block.HEIGHT*2 + margin)*9);}
 
 
-                    }
+
+
+
 
                     //ブロックの描画
                     for(int i = 0;i<num;i++)
@@ -355,6 +312,7 @@ public class MainActivity extends AppCompatActivity {
                         canvas.drawRect(block9[i].x -blockWidth,block9[i].y -blockHeight, block9[i].x +blockWidth, block9[i].y + blockHeight, paint3);
                         canvas.drawRect(block10[i].x -blockWidth,block10[i].y -blockHeight, block10[i].x +blockWidth, block10[i].y + blockHeight, paint3);
                     }
+
 //                    //ブロックを描画する
 //                    for(int i=0; i <24 ;i+=1) {
 //
@@ -372,16 +330,7 @@ public class MainActivity extends AppCompatActivity {
                     if(flag) bar.move(touchX);
 
                     //Ballクラスのボールを移動
-                    ball.x += ball.vx;
-                    ball.y += ball.vy;
-                    //TODO:ボールの中心で判定されてるので、ボールの幅で判定するようにする(Option)
-                    //壁に衝突
-                    if (ball.x < 0 || getWidth() < ball.x)  ball.vx *= -1;
-                    if (ball.y < 0 || getHeight() < ball.y) ball.vy *= -1;
-
-//                    if (ball.y < 0) ball.vy *= -1;//ゲームオーバー用
-
-
+                    ball.move();
 
                     //ボールとバーの当たり判定
                     collisionDetection();
@@ -389,6 +338,14 @@ public class MainActivity extends AppCompatActivity {
 
 
                     //TODO:玉とブロックの衝突判定 ブロック消失　玉反発　音がなる
+                    ball.gameOver();
+
+                    if(!ball.isLive) {
+                        canvas.drawText("Game Over",view_w/2,view_h/2,paint7);
+                    }
+
+
+
 
 
                     getHolder().unlockCanvasAndPost(canvas);

@@ -2,6 +2,7 @@ package com.example.blockbreak;
 
 
 import android.graphics.Point;
+import android.graphics.RectF;
 
 public class Ball {
     //ボールのサイズ
@@ -14,6 +15,7 @@ public class Ball {
     int view_w, view_h;
     // 弾の生死フラグ
     boolean isLive = true;
+    MainActivity mainActivity;
 
     //コンストラクタ
     public Ball(int _x, int _y, int width, int height) {
@@ -35,28 +37,47 @@ public class Ball {
     }
 
     public void move() {
-        // 円の座標を移動させる
-        //circleX += circleVxの部分
-        x = x + (float) vx;
+        x = x + (float) vx;//x座標に移動量をたす（ループの中で）
         y = y + (float) vy;
 
-        // 壁に当たった時の処理、速度を入れ替える
-        if (x > view_w - size) {
-            //画面右
+
+        if (x > view_w) {//画面右
             vx = -vx;
-            x = (view_w - size);
-        } else if (x < 0) {
-            //画面左
+
+        } else if (x < 0) {//画面左
             vx = -vx;
-            x = 0;
+
         }
-        if (y < 0) {
-            //画面上
+        if (y < 0) {//画面上
             vy = -vy;
-            y = 0;
-        } else if (y > view_h) {
-            //画面下
+        } else if (y > view_h) {//画面下
+            setPos(view_w/2, view_h/3);
+
+            Life life = new Life();
+            life.down_Count(1);
+
+        }
+    }
+
+    public void setPos(float x,float y) {
+        this.x=x;
+        this.y=y;
+    }
+
+    public void gameOver() {
+        //countが０よりも小さくなってしまったら
+
+        if(Life.life <= 0) {
+            //カウントに０を代入
+            Life.life=0;
+            //移動を止める為、移動設定をしている変数に０を代入
+            vx=0;
+            vy=0;
+            //ボールを初期位置に戻す
+            setPos(view_w/2,view_h/3);
             isLive = false;
         }
     }
+
+
 }

@@ -19,7 +19,7 @@ public class Points {
 //    }
 
     public void count(int _count){
-        count = _count;
+        count = count + _count;
 
     }
 
@@ -28,10 +28,10 @@ public class Points {
         Paint paint = new Paint();
 
         paint.setAntiAlias(true);
-        paint.setTextSize(20);
+        paint.setTextSize(40);
         paint.setColor(Color.RED);
 
-        canvas.drawText("点数:"+ count, 10, 30, paint);
+        canvas.drawText("点数:"+ count, 20, 60, paint);
 
     }
 

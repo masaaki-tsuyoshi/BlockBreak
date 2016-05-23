@@ -11,8 +11,8 @@ public class Bar {
     public float x;
     public float y;
     //バーのサイズ
-    public final float halfBar = 100;
-    public final int height = 100;
+    public final float halfBar = 80;
+    public final int height = 10;
 
 
     //コンストラクタ
@@ -28,6 +28,11 @@ public class Bar {
         x = touch_x;
     }
 
-
+    public boolean collideWidth(Ball _ball, Bar _bar) {
+        RectF rectCheck = new RectF();//判定用
+        RectF rect_bar = new RectF(_bar.x - _bar.halfBar , _bar.y - _bar.height , _bar.x + _bar.halfBar , _bar.y + _bar.height);//当たり判定用rect bar
+        RectF rect_ball=new RectF(_ball.x - _ball.size , _ball.y - _ball.size , _ball.x + _ball.size, _ball.y + _ball.size );//当たり判定用のrect ball
+        return rectCheck.intersects(rect_bar,rect_ball);//intersect=交差メソッド　ボールが交差したらtrue
+    }
 
 }
