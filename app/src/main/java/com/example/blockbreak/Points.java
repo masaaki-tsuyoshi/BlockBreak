@@ -8,15 +8,6 @@ import android.graphics.Paint;
 public class Points {
 
     int count;//ポイント
-    //座標
-//    public float x;
-//    public float y;
-//
-//    public Points( int _x, int _y ){
-//        //初期座標をセット
-//        x = (float)_x;
-//        y = (float)_y;
-//    }
 
     public void count(int _count){
         count = count + _count;

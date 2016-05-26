@@ -9,14 +9,7 @@ public class Life {
         this.life = life - count;
     }
 
-    public void gameRestart(Ball ball) {
-        ball.vx = 15;
-        ball.vy = 15;
 
-        life = 4;
-        ball.isLive = true;
-
-    }
 
 
 }

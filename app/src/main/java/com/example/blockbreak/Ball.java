@@ -15,7 +15,6 @@ public class Ball {
     int view_w, view_h;
     // 弾の生死フラグ
     boolean isLive = true;
-    MainActivity mainActivity;
 
     //コンストラクタ
     public Ball(int _x, int _y, int width, int height) {
@@ -27,13 +26,6 @@ public class Ball {
         view_h = height;
         vx = 15;
         vy = 15;
-    }
-
-    public int getX(){
-        return (int)x;
-    }
-    public int getY(){
-        return (int)y;
     }
 
     public void move() {
@@ -64,20 +56,7 @@ public class Ball {
         this.y=y;
     }
 
-    public void gameOver() {
-        //countが０よりも小さくなってしまったら
 
-        if(Life.life <= 0) {
-            //カウントに０を代入
-            Life.life=0;
-            //移動を止める為、移動設定をしている変数に０を代入
-            vx=0;
-            vy=0;
-            //ボールを初期位置に戻す
-            setPos(view_w/2,view_h/3);
-            isLive = false;
-        }
-    }
 
 
 }

@@ -13,6 +13,7 @@ public class Bar {
     //バーのサイズ
     public final float halfBar = 80;
     public final int height = 10;
+    public boolean flag;
 
 
     //コンストラクタ
@@ -21,6 +22,7 @@ public class Bar {
         //初期座標をセット
         x = (float)_x;
         y = (float)_y;
+
     }
 
     //barの移動メソッド
@@ -29,6 +31,7 @@ public class Bar {
     }
 
     public boolean collideWidth(Ball _ball, Bar _bar) {
+
         RectF rectCheck = new RectF();//判定用
         RectF rect_bar = new RectF(_bar.x - _bar.halfBar , _bar.y - _bar.height , _bar.x + _bar.halfBar , _bar.y + _bar.height);//当たり判定用rect bar
         RectF rect_ball=new RectF(_ball.x - _ball.size , _ball.y - _ball.size , _ball.x + _ball.size, _ball.y + _ball.size );//当たり判定用のrect ball
