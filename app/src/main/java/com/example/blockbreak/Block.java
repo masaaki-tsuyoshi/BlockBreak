@@ -8,12 +8,14 @@ public class Block {
     public final static int HEIGHT = 10;
     public final static int MARGIN = 5; //ブロックの間のマージン
     final int NUM_BLOCK = 8;
+    boolean isLive;
 
 
     //コンストラクタ
     public Block (int _x,int _y){
         this.x = (float)_x;
         this.y = (float)_y;
+        isLive =true;
     }
 
 
@@ -26,21 +28,19 @@ public class Block {
 
                 if (ball.y + ball.size >= block[i][j].y - HEIGHT && ball.x - ball.size <= block[i][j].x + WIDTH && ball.x + ball.size >= block[i][j].x - WIDTH) {
                     ball.y *= -1;//上の反発
-                    Points count = new Points();
-                    count.count(50);
+                    block[i][j].isLive = false;
+
                 }
-                else if (ball.y - ball.size <= block[i][j].y + HEIGHT && ball.x - ball.size <= block[i][j].x + WIDTH && ball.x + ball.size >= block[i][j].x - WIDTH) {
+                if (ball.y - ball.size <= block[i][j].y + HEIGHT && ball.x - ball.size <= block[i][j].x + WIDTH && ball.x + ball.size >= block[i][j].x - WIDTH) {
                     ball.y *= -1;//下の反発
-                    Points count = new Points();
-                    count.count(50);
-                } else if (ball.x + ball.size >= block[i][j].x - WIDTH && ball.y - ball.size <= block[i][j].y + HEIGHT && ball.y - ball.size >= block[i][j].y - HEIGHT) {
+                    block[i][j].isLive = false;
+
+                } if (ball.x + ball.size >= block[i][j].x - WIDTH && ball.y - ball.size <= block[i][j].y + HEIGHT && ball.y - ball.size >= block[i][j].y - HEIGHT) {
                     ball.vx *= -1;//左
-                    Points count = new Points();
-                    count.count(50);
-                } else if (ball.x - ball.size <= block[i][j].x + WIDTH && ball.y - ball.size <= block[i][j].y + HEIGHT && ball.y - ball.size >= block[i][j].y - HEIGHT) {
+                    block[i][j].isLive = false;
+                }if (ball.x - ball.size <= block[i][j].x + WIDTH && ball.y - ball.size <= block[i][j].y + HEIGHT && ball.y - ball.size >= block[i][j].y - HEIGHT) {
                     ball.vx *= -1;//右
-                    Points count = new Points();
-                    count.count(50);
+                    block[i][j].isLive = false;
                 }
             }
 

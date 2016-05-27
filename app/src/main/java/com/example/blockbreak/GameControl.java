@@ -25,6 +25,8 @@ public class GameControl extends Activity {
     public static final int MARGIN =5;
     Bar bar;
     Ball ball;
+    int width = Block.WIDTH;
+    int height = Block.HEIGHT;
 
     int num; //カウンターiの最大値変数 画面サイズによって表示個数を変えるため
     int g =1;//ゲームスタート、ゲームオーバー、リスタート case用変数
@@ -93,7 +95,38 @@ public class GameControl extends Activity {
 
             }
 
-        } else if (Block.collideWidth2(view_w, view_h, ball, block)){}
+        }
+
+        for( int i = 0;i< num ;i++ ) {
+                for (int j = 0; j< 10 ;j++ ) {
+
+                    if (ball.y + ball.size >= block[i][j].y - height && ball.x - ball.size <= block[i][j].x + Block.WIDTH && ball.x + ball.size >= block[i][j].x - width) {
+                        ball.vy *= -1;//上の反
+                        block[i][j].isLive = false;
+
+                    }
+                    if (ball.y - ball.size <= block[i][j].y + height && ball.x - ball.size <= block[i][j].x + width && ball.x + ball.size >= block[i][j].x - width) {
+                        ball.vy *= -1;//下の反発
+                        block[i][j].isLive = false;
+
+                    }
+                    if (ball.x + ball.size >= block[i][j].x - width && ball.y - ball.size <= block[i][j].y + height && ball.y + ball.size >= block[i][j].y - height) {
+                        ball.vx *= -1;//左
+                        block[i][j].isLive = false;
+
+                    }
+                    if (ball.x - ball.size <= block[i][j].x + width && ball.y - ball.size <= block[i][j].y + height && ball.y + ball.size >= block[i][j].y - height) {
+                        ball.vx *= -1;//右
+                        block[i][j].isLive = false;
+
+                    }
+
+                }
+
+        }
+
+
+
 
     }
 
@@ -118,12 +151,14 @@ public class GameControl extends Activity {
         for(int i = 0;i< num ;i++ ){
             for(int n = 0; n<10; n++){
                 for(int j =0; j <10; j++){
-                    block[i][j] = new Block (view_w/num + (Block.WIDTH*2+ Block.MARGIN) * i, view_h/10 + (Block.HEIGHT*2 + MARGIN) * n);
-                    canvas.drawRect(block[i][j].x -blockWidth,block[i][j].y -blockHeight, block[i][j].x +blockWidth, block[i][j].y + blockHeight, paint3);
+                        block[i][j] = new Block(view_w / num + (Block.WIDTH * 2 + Block.MARGIN) * i, view_h / 10 + (Block.HEIGHT * 2 + MARGIN) * n);
+                        canvas.drawRect(block[i][j].x - blockWidth, block[i][j].y - blockHeight, block[i][j].x + blockWidth, block[i][j].y + blockHeight, paint3);
+
                 }
 
             }
         }
+
 
 
         //バーを描画する   left top right bottom

@@ -94,8 +94,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         @Override
-        public void surfaceChanged(SurfaceHolder holder, int format, int width,
-                                   int height) {
+        public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
 
         }
 
